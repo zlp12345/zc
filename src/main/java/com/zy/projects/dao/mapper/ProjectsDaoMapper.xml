@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zy.projects.dao.ProjectsDao">
+       <select id="getPro" parameterType="com.zy.projects.pojo.Projects" resultMap="pPstLget">
+           SELECT * FROM projects p INNER JOIN login l ON p.ps_us_id=l.lid INNER JOIN projectstype pst ON p.ps_pst_id=pst.pst_id where 1=1
+          <if test="ps_name != null and ps_name != ''">
+              and ps_name  like '%${ps_name}%'
+          </if>
+           <if test="ps_us_id != null and ps_us_id != ''">
+               and ps_us_id like '%${ps_us_id}%'
+           </if>
+           <if test="ps_pst_id != null and ps_pst_id != ''">
+               and ps_pst_id = #{ps_pst_id}
+           </if>
+           <if test="ps_type != null and ps_type != ''">
+               and ps_type = #{ps_type}
+           </if>
+       </select>
+    <resultMap id="pPstLget" type="com.zy.projects.pojo.Projects">
+        <id column="ps_id" property="ps_id"/>
+        <association property="login" column="lid" select="getByLoginId"/>
+        <association property="projectsee" column="pst_id" select="getByProjectstypeId"/>
+    </resultMap>
+       <select id="getByLoginId" parameterType="int" resultType="com.zy.login.pojo.Login">
+              SELECT * FROM login WHERE lid=#{lid};
+       </select>
+       <select id="getByProjectstypeId" parameterType="java.lang.Integer" resultType="com.zy.projectstype.pojo.Projectstype">
+               SELECT * FROM projectstype WHERE pst_id=#{ps_pst_id};
+       </select>
+        <select id="getByPsId" parameterType="java.lang.Integer" resultMap="pPstLget">
+               SELECT * FROM projects p INNER JOIN login l ON p.ps_us_id=l.lid INNER JOIN projectstype pst ON p.ps_pst_id=pst.pst_id
+               where p.ps_id=#{ps_id}
+        </select>
+
+</mapper>
